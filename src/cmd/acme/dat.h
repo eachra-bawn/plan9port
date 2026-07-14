@@ -241,6 +241,7 @@ struct Window
 	uchar	filemenu;
 	uchar	dirty;
 	uchar	autoindent;
+	uchar	spaceindent;
 	uchar	showdel;
 	int		id;
 	Range	addr;
@@ -554,6 +555,7 @@ extern int			editing;
 extern int			erroutfd;
 extern int			messagesize;		/* negotiated in 9P version setup */
 extern int			globalautoindent;
+extern int			globalspaceindent;
 extern int			dodollarsigns;
 extern char*		mtpt;
 

@@ -902,6 +902,13 @@ texttype(Text *t, Rune r)
 			}
 		}
 		break; /* fall through to normal code */
+	case '\t':
+		if(t->w->spaceindent){
+			for(i=0; i<t->w->body.tabstop; i++)
+				texttype(t, ' ');
+			return;
+		}
+		break;
 	}
 	/* otherwise ordinary character; just insert, typically in caches of all texts */
 	for(i=0; i<t->file->ntext; i++){

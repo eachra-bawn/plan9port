@@ -114,6 +114,9 @@ threadmain(int argc, char *argv[])
 	case 'r':
 		swapscrollbuttons = TRUE;
 		break;
+	case 's':
+		globalspaceindent = TRUE;
+		break;
 	case 'W':
 		winsize = ARGF();
 		if(winsize == nil)
@@ -121,7 +124,7 @@ threadmain(int argc, char *argv[])
 		break;
 	default:
 	Usage:
-		fprint(2, "usage: acme -a -c ncol -f fontname -F fixedwidthfontname -l loadfile -W winsize\n");
+		fprint(2, "usage: acme -as -c ncol -f fontname -F fixedwidthfontname -l loadfile -W winsize\n");
 		threadexitsall("usage");
 	}ARGEND
 

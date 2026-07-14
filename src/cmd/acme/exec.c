@@ -55,6 +55,7 @@ void	sendx(Text*, Text*, Text*, int, int, Rune*, int);
 void	sort(Text*, Text*, Text*, int, int, Rune*, int);
 void	tab(Text*, Text*, Text*, int, int, Rune*, int);
 void	zeroxx(Text*, Text*, Text*, int, int, Rune*, int);
+void spaceindent(Text*, Text*, Text*, int, int, Rune*, int);
 
 typedef struct Exectab Exectab;
 struct Exectab
@@ -95,6 +96,7 @@ static Rune LSort[] = { 'S', 'o', 'r', 't', 0 };
 static Rune LTab[] = { 'T', 'a', 'b', 0 };
 static Rune LUndo[] = { 'U', 'n', 'd', 'o', 0 };
 static Rune LZerox[] = { 'Z', 'e', 'r', 'o', 'x', 0 };
+static Rune LSpaceIndent[] = { 'S', 'p', 'a', 'c', 'e', 'i', 'n', 'd', 'e', 'n', 't', 0 };
 
 Exectab exectab[] = {
 	{ LAbort,		doabort,	FALSE,	XXX,		XXX,		},
@@ -110,6 +112,7 @@ Exectab exectab[] = {
 	{ LID,		id,		FALSE,	XXX,		XXX		},
 	{ LIncl,		incl,		FALSE,	XXX,		XXX		},
 	{ LIndent,		indent,	FALSE,	XXX,		XXX		},
+	{ LSpaceIndent, spaceindent,	FALSE,		XXX,	XXX		},
 	{ LKill,		xkill,		FALSE,	XXX,		XXX		},
 	{ LLoad,		dump,	FALSE,	FALSE,	XXX		},
 	{ LLocal,		local,	FALSE,	XXX,		XXX		},
@@ -1397,21 +1400,27 @@ enum {
 };
 
 static int
-indentval(Rune *s, int n)
+onoffval(Rune *s, int n, int *global)
 {
 	if(n < 2)
 		return IError;
 	if(runestrncmp(s, LON, n) == 0){
-		globalautoindent = TRUE;
-		warning(nil, "Indent ON\n");
+		*global = TRUE;
+		//warning(nil, "Indent ON\n");
 		return IGlobal;
 	}
 	if(runestrncmp(s, LOFF, n) == 0){
-		globalautoindent = FALSE;
-		warning(nil, "Indent OFF\n");
+		*global = FALSE;
+		//warning(nil, "Indent OFF\n");
 		return IGlobal;
 	}
 	return runestrncmp(s, Lon, n) == 0;
+}
+
+static int
+indentval(Rune *s, int n)
+{
+	return onoffval(s, n, &globalautoindent);
 }
 
 static void
@@ -1419,6 +1428,7 @@ fixindent(Window *w, void *arg)
 {
 	USED(arg);
 	w->autoindent = globalautoindent;
+	w->spaceindent = globalspaceindent;
 }
 
 void
@@ -1448,6 +1458,35 @@ indent(Text *et, Text *_0, Text *argt, int _1, int _2, Rune *arg, int narg)
 		allwindows(fixindent, nil);
 	else if(w != nil && autoindent >= 0)
 		w->autoindent = autoindent;
+}
+
+void
+spaceindent(Text *et, Text *_0, Text *argt, int _1, int _2, Rune *arg, int narg)
+{
+	Rune *a, *r;
+	Window *w;
+	int na, len, spindent;
+
+	USED(_0);
+	USED(_1);
+	USED(_2);
+
+	w = nil;
+	if(et!=nil && et->w!=nil)
+		w = et->w;
+	spindent = IError;
+	getarg(argt, FALSE, TRUE, &r, &len);
+	if(r!=nil && len>0)
+		spindent = onoffval(r, len, &globalspaceindent);
+	else{ /* I'm not really sure what this does */
+		a = findbl(arg, narg, &na);
+		if(a != arg)
+			spindent = onoffval(arg, narg-na, &globalspaceindent);
+	}
+	if(spindent == IGlobal)
+		allwindows(fixindent, nil);
+	else if(w != nil && spindent >= 0)
+		w->spaceindent = spindent;
 }
 
 void

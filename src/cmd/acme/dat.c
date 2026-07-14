@@ -43,6 +43,7 @@ char			*acmeshell;
 //char			*fontnames[2];
 extern char		wdir[]; /* must use extern because no dimension given */
 int			globalautoindent;
+int			globalspaceindent;
 int			dodollarsigns;
 
 Channel	*cplumb;		/* chan(Plumbmsg*) */

@@ -81,6 +81,7 @@ wininit(Window *w, Window *clone, Rectangle r)
 	w->filemenu = TRUE;
 	w->maxlines = w->body.fr.maxlines;
 	w->autoindent = globalautoindent;
+	w->spaceindent = globalspaceindent;
 	if(clone){
 		w->dirty = clone->dirty;
 		w->autoindent = clone->autoindent;
